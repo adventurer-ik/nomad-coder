@@ -6,14 +6,18 @@
 
 ## 1. JS-cromeapp
 완료
+
 ## 2. JS-paintapp
 2022.10.10 현재 진행 중
+
 ## 3. Kokoa-clone
 진행 미정
+
 ## 4. ReactJS-movie
 2022.10.10 현재 진행 중
+
 ## 5. Typescript-blockchain 
 완료
+
 ## 6. Nest-js API
 완료
-# nomad-coder
