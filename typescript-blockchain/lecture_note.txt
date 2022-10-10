@@ -1,0 +1,373 @@
+3.0
+call signature
+:typescript에게 함수를 어떻게 호출하는지, 또 함수의 반환 타입도 알려줌
+:인자(arguments)의 타입, 함수의 반환 타입 제공
+
+type Add = (a:number, b:number) => number;
+이렇게 call signature 지정해주면 됨.
+
+const add:Add = (a, b) => a + b
+그리고 이렇게 함수 만들고,. 함수 위에 마우스 over 하면 알 수 있음!
+
+3.1
+오버로딩 overloading
+함수가 여러개의 call signatures를 가지고 있을 때 발생 됨
+어렵게 생각하지말자.
+다시 말하자면, 오버로딩은
+여러 call signatures가 있는 함수 일뿐..!!
+
+일상 개발에서 볼 수 있는 오버로딩
+
+type Config = {
+    path: string,
+    state: object
+}
+
+type Push = {
+    (path: string): void
+    (config: Config): void
+}
+
+const push:Push = (config) => {
+    if (typeof config === "string") { console.log(config) }
+    else {
+        console.log(config.path)
+    }
+}
+
+call signatures에서, type만 다른 것도 있지만,
+파라미터의 개수가 다른 경우도 있음
+type Add2 = {
+    (a:number, b:number): number
+    (a:number, b:number, c:number): number
+}
+
+# 3.2 Polymorphism
+Polymorphism (다형성) 이란 무엇일까?
+1. poly
+그리스 어로 poly 라는 뜻은 many, several, much, multi...의 뜻을 가지고 있음
+polygon (다각형)을 떠올려도 비슷함!
+poly는 많은, 다수의, gon은 각도라는 뜻! - 여러개의 각을 가지고, 여러개의 면을 가진 것!
+2.morphos 혹은 morphic 은?
+form (형태), structure (구조) 란 뜻을 가지고 있음.
+이게 morphos의 의미.
+3.결론
+Polymorphism -> 결국은 many(poly) structure(morphos) 라고도 할 수 있음!
+내포하는 뜻 - 여러가지 형태나 구조를 가진 함수!
+ → 하나의 함수가 여러가지 타입이나 다른 리턴값을 가진 형태로 존재 가능하다는 뜻!
+
+concreate type
+- number, boolean, void 등 지금까지 배운 타입
+
+generic type
+- 타입의 placeholder
+
+※ 제네릭을 기억하자
+>>>>type SuperPrint = {
+    <T>(arr: T[]): void
+}
+
+const superPrint: SuperPrint = (arr) => {
+    arr.forEach(i => console.log(i))
+}
+
+superPrint([true, true, false])
+superPrint([1, 2, 3, 4])
+superPrint(["seo", "ik", "jeong", "ysw"])
+superPrint(["seo", 27, 1, "ysw", true])
+
+
+# 3.3 Generic Recap
+type SuperPrint = <T>(a: T[]) => T
+
+const superPrint: SuperPrint = (a) => a[0]
+
+const a = superPrint([1, 2, 3, 4])
+const b = superPrint([true, false, true])
+const c = superPrint(["a", "b", "c"])
+const d = superPrint([1, 2, true, "hello"])
+
+<T> 를 활용했다는 것은 타입스크립트에게 우리는 T라는 제네릭을 쓴다라고 알려준 것임.
+T는 배열에서 오고, 함수의 첫번째 파라미터에서 오는 거라고 ts에게 알려준 것임.
+const a 해석 ->
+TS는 이걸 기반 (a: T[])으로 여기를 살펴봐야 하는 것을 알고,  배열의 첫 값 1을 보고
+number임을 인식, T를 number로 바꿔줌.
+
+기억하자.
+제네릭은 내가 요구한 대로 signature를 생성해줄 수 있는 도구라고 생각하면 된다.
+
+
+# 3.4 - Conclusions
+우리가 실제 코드 작성할 때는 type 을 통해 제네릭을 사용하여 작성해서 call signature를 만드는 경우는 거의 없음.
+주로 라이브러리 등을 만들 때 사용하는 편임.
+우리는 쓴다면 함수를 만들 때 같이 제네릭 선언해주면서 쓰는 편임.
+
+function superPrint<T>(a: T[]) {
+    return a[0]
+}
+
+이렇게 해주면 된다!
+그리고 해당 함수를 호출할때 type을 선언 해줄 수 있지만 왠만하면 typescript가 유추하도록 하자.
+
+제네릭은 재 사용이 가능함.
+
+인터넷에서 검색하면 나오는 설명 중 하나.
+'제네릭은 선언 시점이 아니라 생성 시점에 타입을 명시하여 하나의 타입만이 아닌 다양한 타입을 사용할 수 있도록 하는 기법이다.'
+
+# 4.0 Classes
+abstract class (추상 클래스)
+: 다른 클래스가 상속 받을 수 있는 클래스
+   - 오직 상속만 가능하다.
+   - 일반적인 클래스와 달리 추상 클래스 자체로는 새로운 인스턴스를 만들 수 없다.
+   - ※ 추상 클래스를 상속 받을 수만 있고, 직접적으로 인스턴스를 만들 수 없다.
+추상 메소드를 만들려면, 메소드를 클래스 안에서 구현(implementation)하지 않으면 된다.
+추상 클래스 안에서는 추상 메소드를 만들 수 있다.
+하지만, 메소드를 구현해서는 안 되고, 메소드의 call signature만 적어두어야 한다.
+메소드는 클래스 안에 존재하는 함수이다.
+
+//추상 클래스 생성
+abstract class User {
+    constructor(
+        // typescript에는 private 존재 -> js는 없음.
+        // ts -> js로 컴파일하면서 사라짐. ts가 개발자 보호해주는 용도임. 여기선...
+        protected firstName: string,
+        protected lastName: string,
+        protected nickName: string
+    ) {}
+
+    // 말이 안되긴 하지만 설명을 위해서..!
+    // 추상 메소드는 구현이 되어있지 않은 메소드.
+    // 상속 받은 사람은 반드시 구현을 해줘야 함 (오버라이딩)
+    abstract getNickName(): void 
+
+    getFullName() {
+        return `${this.firstName} ${this.lastName}`
+    }
+}
+
+class Player extends User {
+    // 추상 클래스에 추상 메소드가 있다면, 해당 추상 클래스를 상속받는 녀석은 반드시 구현해야 함.
+    getNickName() {
+        console.log(this.nickName)
+    }
+}
+
+const ik = new Player("JeongIK", "Seo", "또르");
+
+
+ public, private, protected
+ 여기서 protected는 클래스 밖에서는 private처럼 접근이 불가능 하나,
+ 자식 클래스가 상속 받는 상황에서는 접근이 가능하다.
+
+
+# 4.1 Recap
+1. # 4.0 복습
+ - public, protected, private
+ - abstract class, abstract method
+ - 관련 보호기능은 js는 신경안씀. 오직 ts에서만 보호해줌.
+
+# 4.2 Interfaces
+- pulbic의 경우 수정이 가능하다.
+  다만, public을 유지하되, 수정은 불가능하게 할 수 있다.
+  바로 readonly를 추가해주는 것이다.
+  ex) public readonly term: string
+
+- static
+ : ts 것이 아니라 js 것이다.
+
+- interface
+ : 오직 한 가지 용도만을 가지고 있다.
+   → 오브젝트의 모양을 특정해주기 위한 것임.
+   → React.js를 이용해 작업을 할 때 많이 사용함.
+   → js로 컴파일시 번역(?)되지 않음 - 파일 사이즈가 작아짐!
+   → 단순히 객체의 형태를 알려주는 용도라면 interface가 좋다.
+   → private, protected property를 사용 못함. (오직 public만 가능)
+   → abstract과 달리 constructor를 수동으로 만들어주어야 함.!
+   → abstract 같은거는 extends 키워드 써서 상속하지만, interface는 implementation 을 써서 상속해야 한다.
+
+- ts에 object 모양을 알려주는 방법은 2가지가 있음
+ : type, interface
+ 
+ type Team = "red" | "blue" | "yellow"
+ type Health = 1 | 5 | 10
+ type Player1 = {
+    nickname: string,
+    team: Team,
+    health: Health
+ }
+ interface Player2 {
+    nickname: string,
+    team: Team,
+    health: Health
+ }
+위 코드를 보면 type과 interface의 차이가 보이는가?
+
+type 키워드와 interface 키워드 간의 다른 점은, type 키워드가 활용도가 더 높다는 것임.
+interface는 오직 object 모양을 typescript에 설명해주는 용도로만 쓰이는 키워드이기 때문이다.
+object 형태를 만들 때는 interface가 보기 더 좋은듯 하다.
+취향 차이긴 하지만 나는 interface를 쓰는 것이 더 잘 맞는듯 하다.
+
+※ 타입스크립트 커뮤니티
+: 클래스나 오브젝트의 모양을 정의하고 싶으면 interface 키워드 쓰고
+: 그외 다른 모든 경우에서는 type 키워드를 쓰는 것을 권장함.
+
+
+# 4.5 Polymorphism
+Polymorphism (다형성) - 다른 모양의 코드를 가질 수 있게 해주는 것
+다형성을 이루는 방법은 제네릭을 부여하는 것임.
+제네릭은 placeholder 타입을 쓸 수 있도록 해주는 것임.
+ - concreate 타입이 아니라 placeholder 타입!!
+ - 적절한 때가 되면 typescript가 placeholder 타입을 concreate타입으로 바꿔줄 거임.
+   : 그러므로 우리는 신경쓸 필요없이 placeholder루 가면 됨!
+   
+
+# 5.2 Lib Configuration
+- tsconfig.json 파일에서, lib는 typescript에게 해당 코드는 어디서 쓰이는지 알려주는 역할을 한다.
+  :타겟 런타임
+  서버에서만 쓴다면 단순히 "ES6".. 이런것만 알려주면 되곘지만, 브라우저등에서 쓴다고 하면 "DOM" 등을 추가해주면 된다.
+ 그러면 타입스크립트는 브라우져.. DOM에서 쓰이는 모든 것을 알려주게 된다.  (자동완성 기능을 쓸 수 있다는 뜻)
+
+ lib 요약
+ : 타입스크립트에게 내가 무슨 API를 쓸거고 어떤 환경에서 코드를 실행시킬 것인지를 알려주는 것임
+ : 타입스크립트에게 어떤 API를 사용하고, 어떤 환경에서 코드를 실행하는지를 말해주는 속성
+ : 타겟 런타임 환경이 뭔지 알려주는 것
+ : 자동완성 기능을 쓸 수 있게 된다 - 생산성 대폭 향상!!!
+
+ # 5.3 Declaration Files
+
+ tsconfig.json 파일의 lib 항목에 마우스를 올려보면
+ "Specify a set of bundled library declaration files that describe the target runtime environment." 
+ 이렇게 언급 된다.
+ 연결되어있는 링크인 https://www.typescriptlang.org/tsconfig#lib 
+ 에서 보면은 "타입스크립트는 내장된 자바스크립트 API를 위한 기본적인 타입 정의는 가지고 있다." 라고 언급하고 있다.
+ 핵심: 타입스크립트가 기본적인 타입 정의는 가지고 있다.
+ 
+ 이는 어느 멋진 개발자가 타입스크립트에게 예를 들어서 localStorage 등의 자바스크립트 API의 
+ 구조, 아규먼트, 그리고 리턴값과 리턴 타입을 설명해준 것이다.
+
+ 누군가가 시간을 들여서 타입스크립트에게 document 오브젝트의 모양과 아규먼트, 리턴 타입과 같은
+ 모든 것들을 설명해 준 것이다. Math 오브젝트의 경우에도 마찬가지로 같은 작업을 해둔 것이다.
+ 
+ 이러한 노력 덕분에 타입스크립트가 몇몇 자바스크립트 코드와 API의 타입을 설명할 수 있도록 해준다.
+
+ 이런 일련의 작업이 없다면 아무도 타입스크립트를 안쓴닷!
+ 그렇기에 타입스크립트에게 우리가 불러올 자바스크립트 함수의 타입 정의 작업이 필요하다.
+
+ ※ strict 항목을 true로 하면 typescript가 훨씬 더 깐깐하게 타입, 문법을 감시한다.
+  - 정의 파일이 필요하다. 없으면 에러가 난다!! (라이브러리나 모듈을 사용할 때.)
+
+ 다음 챕터에서는 타입스크립트를 자바스크립트 프로젝트에 도입할 때,
+ 즉 자바스크립트 프로젝트를 타입스크립트 프로젝트로 이전할 때 어떤 일이 발생하는지를 보는 것.
+ 우리가 타입스크립트가 어떻게 localStroage, window, Math에 대해 아는지를 알았당!
+ node_modules의 어딘가에 모든 것을 설명해주는 ~.d.ts 형태의 멋진 파일이 존재하기 때문에 가능한 것이다.
+
+
+ # 번외편 - 매개변수와 인수의 차이
+  매개변수
+   : Parameters
+   : 함수 선언의 변수
+   : ex) function sendEmail(from, to) {} ... 할 때
+
+  인수
+   : Arguments
+   : 함수로 보내는 실제 값, 실제 데이터
+
+   ※ 사람들이 이 단어를 서로 바꿔서 사용하는 경우가 많지만, 걱정하지말자. 걍 쌤쌤~
+
+  
+# 5.4 JSDoc
+오래전에 시작된 프로젝트를 계속 유지보수 하는 경우등
+여러가지 사유로 JS와 TS가 공존할 수도 있음.
+이런 경우는 JS를 모두 TS로 바꿀 수는 없는 상황이다.
+- 공수가 많이 들고, 또 JS로 잘 돌아가던 제품이 TS로 전환되면서 잘 안될수도 있고 위험하다.
+
+이런 상황에서 사용하는 방법이 바로 JSDoc이다.
+완전히 타입스크립트로 사용하기 힘든 경우..!!
+
+그렇지만 ts가 그래도 js 파일도 한번 읽어보고 타입등을 관리를 해주길 바란다면
+tsconfig.json 파일에 "allowJs": true 항목을 추가해주면 된다.
+(단 js 파일은 강제하지는 않고, 읽고 안내만 해줌.)
+
+typescript가 타입을 관리하는 것은 .ts 파일만 관리한다.
+하지만, .js 파일도 타입 관리 하기를 바라는 경우가 많이 있을 것이다.
+또는, 자바스크립트 파일을 수정하고 싶지는 않지만, TS 방식으로 관리해주고 싶다면
+해당 js 파일쪽에
+"// @ts-check" 를 추가해주면 된다.
+그리고 그 다음 라인에서 자동완성 기능을 사용해서 타입을 명시할 수가 있다.
+(강의에서는 코멘트를 달아준다고 표현함.)
+그러면 타입스크립트가 이를 읽어서 확인을 해준다.
+단순히 코멘트이기때문에 잘못되었다 해서 기존의 .js 파일에 문제가 가거나 하지는 않는다.
+
+즉, js를 ts로 변환하면 고장날거 같고.. 그렇지만 ts가 type 확인은 해줬으면 좋겠고..
+그런 경우에는 위의 방법을 활용할 수가 있다.
+
+
+# 5.5 Blocks
+1. npm install -D 옵션 
+  : -D 옵션 추가했을 경우, devDependencies 패키지에 추가가 됨.
+  : 이 경우, --production 옵션 추가하여 배포할 프로젝트 빌드시, devDependencies 에 있는 패키지들은 포함되지 않음.
+관련하여 웹 검색해서 알아는 두자!
+https://phsun102.tistory.com/29
+
+2. static 함수
+: 클래스 안에서 사용하는 함수로, 클래스 인스턴스가 없어도 부를 수 있는 함수를 뜻함.
+  클래스로 인스턴스를 생성한 후, 해당 인스턴스로 호출 가능한 것들과는 다름.
+  그냥 해당 클래스에서 바로 사용할 수 있다고 생각하면 됨.
+  마치 유틸리티 함수 처럼 사용 할 수 있음.
+
+3.
+ts-node
+ts-node는 Node.js용 TypeScript 실행 엔진 및 REPL이다. 
+JIT는 TypeScript를 JavaScript로 변환하므로 사전 컴파일 없이 Node.js에서 TypeScript를 직접 실행할 수 있다.
+즉, 빌드 없이 실행하게 해준다!
+뭔가 수정하고 추가해도 ts-node가 컴파일 할 필요없이 타입스크립트 코드를 대신 실행해줌.
+프로덕션에선 쓰진 않고 개발 환경에서만 쓴다~!!
+빌드 없이 빠르게 새로 고침할 때 쓰기 좋음!
+package.json 파일의 scripts 항목에 "dev": "ts-node src/index.ts" 형태로 추가해서 씀.
+https://www.npmjs.com/package/ts-node
+
+
+설치 방법
+npm i ts-node -D
+
+4.
+nodemon
+자동으로 커맨드를 재 실행해줘서 일일이 커맨드를 실행해서 서버를 재시작 할 필요가 없음.
+ts-node 설정한 "dev" 항목에 nodemon --exec를 추가해야 한다.
+ex) "dev": "nodemon --exec ts-node src/index.ts"
+https://www.npmjs.com/package/nodemon
+npm i nodemon -D
+
+5.
+esModuleInterop
+CommonJS 모듈을 ES6 모듈 코드베이스로 가져오려고 할 때 발생하는 문제를 해결해줌. 
+ES6 모듈 사양을 준수하여 CommonJS 모듈을 정상적으로 가져올 수 있게 해준다.
+https://www.typescriptlang.org/tsconfig/#esModuleInterop
+
+# 5.3 Declaration Files
+myPackage.js 에 함수를 만들고.. 모듈화했을 경우, 
+타입스크립트는 모름.
+이를 TS에게 설명하기 위해서는 ~.d.ts 파일을 만들어서 설명해주어야 함!
+myPackage.d.ts  제작.
+
+declare module "myPackage" {
+    function init(config: Config): boolean
+}
+
+이런식으로 TS에 설명을 해주어야 함.
+
+
+# 5.6 DefinitelyTyped
+TypeScript type 정의를 위한 리포지토리!!
+https://github.com/DefinitelyTyped/DefinitelyTyped
+
+아래 같은 방식으로 npm install해서 typescript가 인식하게 한다!
+@types/node
+npm i @types/node -D
+
+※ 요즘은 npm에 d.ts 파일이 포함되는 추세여서 예전만큼은 아니지만 그래두 알아두자! 중요!
+
+
+# 5.8 Conclusions
+- 타입 스크립트 핸드북을 꼭 틈틈이 읽어보자 ^^
+- .prettierrc_copy.txt 파일을 보면서 prettier 의 항목을 일단 얼추 알아두자 ^^
