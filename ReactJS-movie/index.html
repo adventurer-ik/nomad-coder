@@ -8,30 +8,44 @@
     <!-- <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script> -->
     <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.7.2/prop-types.js"></script>
     <script type="text/babel" data-type="module">
-        function Btn({ name, desc, big }) {
-            console.log(name, desc, big);
+        function Btn({ text, changeValue }) {
+            console.log(text, changeValue);
             return (
-                <button
-                    style={{
-                        backgroundColor: 'tomato',
-                        color: 'white',
-                        padding: '10px 20px',
-                        border: 0,
-                        borderRadius: 10,
-                        fontSize: big ? 30 : 14,
-                    }}
-                >
-                    {(name, desc)}
-                </button>
+                <div>
+                    <button
+                        onClick={changeValue}
+                        style={{
+                            backgroundColor: 'tomato',
+                            color: 'white',
+                            padding: '10px 20px',
+                            border: 0,
+                            borderRadius: 10,
+                            fontSize: 20,
+                        }}
+                    >
+                        {text}
+                    </button>
+                </div>
             );
         }
 
+        // 불필요한 re-rendering 방지
+        const MemorizedBtn = React.memo(Btn);
+
+        MemorizedBtn.propTypes = {
+            text: PropTypes.string.isRequired,
+            fontSize: PropTypes.number,
+        };
+
         function App() {
+            const [value, setValue] = React.useState('Save Changes');
+            const changeValue = () => setValue('Revert Changes');
             return (
                 <div>
-                    <Btn name='Save Changes' desc={123} big={true} />
-                    <Btn name='Continue' desc={890} />
+                    <MemorizedBtn text={value} changeValue={changeValue} />
+                    <MemorizedBtn text='Continue' />
                 </div>
             );
         }
