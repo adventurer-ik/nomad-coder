@@ -1,50 +1,79 @@
-import Button from './Button';
-import styles from './App.module.css';
-import { useState, useEffect } from 'react';
+// import { useEffect, useState } from 'react';
 
 // function App() {
-//     const [counter, setValue] = useState(0);
-//     const [keyword, setKeyword] = useState('');
-//     const onClick = () => setValue((prev) => prev + 1);
-//     const onChange = (event) => setKeyword(event.target.value);
-//     console.log('I run all the time.');
+//     const [loading, setLoading] = useState(true);
+//     const [coins, setCoins] = useState([]);
 //     useEffect(() => {
-//         console.log('CALL THE API');
+//         fetch('https://api.coinpaprika.com/v1/tickers')
+//             .then((response) => response.json())
+//             .then((json) => {
+//                 setCoins(json);
+//                 setLoading(false);
+//             });
 //     }, []);
-
-//     useEffect(() => {
-//         console.log('Search For Keyword~!!: ', keyword);
-//     }, [keyword]);
-//     useEffect(() => {
-//         console.log('Counter~~~~~!!!!!!!!!! ', counter);
-//     }, [counter]);
 //     return (
-//         <div className='App'>
-//             <h1 className={styles.title}>Welcome back!</h1>
-//             <Button text='서정익 최고!' />
-//             <h2>{counter}</h2>
-//             <input value={keyword} onChange={onChange} type='text' placeholder='Seach here..' />
-//             <button onClick={onClick}>click me</button>
+//         <div>
+//             <h1>The Coin! {loading ? '' : `(${coins.length})`}</h1>
+//             {loading ? <strong>Loading...</strong> : null}
+//             <ul>
+//                 {coins.map((coin, index) => (
+//                     <li key={index}>
+//                         {coin.name} ({coin.symbol}): ${coin.quotes.USD.price}
+//                     </li>
+//                 ))}
+//             </ul>
 //         </div>
 //     );
 // }
-function Hello() {
-    useEffect(() => {
-        console.log("I'm Here!");
-        return () => console.log("I'm Out!"); //Cleanup function이라고 하며, 해당 컴포넌트가 destroy 될 때 수행되는 함수.
-    }, []);
-    return <h1>Hello</h1>;
-}
+// export default App;
+import { useState, useEffect } from 'react';
 
 function App() {
-    const [showing, setShowing] = useState(false);
-    const onClick = () => setShowing((prev) => !prev);
+    const [loading, setLoading] = useState(true);
+    const [coins, setCoins] = useState([]);
+    const [cost, setCost] = useState(0);
+    const [need, setNeed] = useState(0);
+    const onChange = (event) => {
+        setCost(event.target.value);
+        setNeed(0);
+    };
+    const handleInput = (event) => {
+        setNeed(event.target.value);
+    };
+    useEffect(() => {
+        fetch('https://api.coinpaprika.com/v1/tickers')
+            .then((response) => response.json())
+            .then((json) => {
+                setCoins(json);
+                setLoading(false);
+            });
+    }, []);
     return (
         <div>
-            {showing ? <Hello /> : null}
-            <button onClick={onClick}>{showing ? 'Hide' : 'Show'}</button>
+            <h1>The coins!{loading ? '' : `Here are..${coins.length} coins`}</h1>
+            {loading ? (
+                <strong>loading...</strong>
+            ) : (
+                <select onChange={onChange}>
+                    <option>Select Coin!</option>
+                    {coins.map((coin, index) => (
+                        <option
+                            key={index}
+                            value={coin.quotes.USD.price}
+                            // id={coin.symbol}
+                            // symbol={coin.symbol}
+                        >
+                            {coin.name}({coin.symbol}) : ${coin.quotes.USD.price} USD
+                        </option>
+                    ))}
+                </select>
+            )}
+            <h2>Please enter the amount</h2>
+            <div>
+                <input type='number' value={need} onChange={handleInput} placeholder='dollor' />$
+            </div>
+            <h2>You can get {need / cost}</h2>
         </div>
     );
 }
-
 export default App;
